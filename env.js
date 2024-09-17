@@ -76,7 +76,7 @@ const PREFIXES = {
   code: 'http://data.vlaanderen.be/id/concept/',
   person: 'http://www.w3.org/ns/person#',
   xsd: 'http://www.w3.org/2001/XMLSchema#',
-  cycling: 'http://mu.semte.ch/vocabularies/ext/cycing/',
+  cycling: 'http://mu.semte.ch/vocabularies/ext/cycling/',
 };
 
 const BASE = {
