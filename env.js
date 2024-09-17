@@ -47,7 +47,7 @@ export const ERROR_BASE = envvar
   .default('http://data.lblod.info/errors/')
   .asUrlString();
 
-const PREFIXES = {
+export const PREFIXES = {
   besluit: 'http://data.vlaanderen.be/ns/besluit#',
   adms: 'http://www.w3.org/ns/adms#',
   skos: 'http://www.w3.org/2004/02/skos/core#',
@@ -89,6 +89,7 @@ const PREFIXES = {
   eli: "http://data.europa.eu/eli/ontology#",
   nao: "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#",
   sign: "http://mu.semte.ch/vocabularies/ext/signing/",
+  dct: "http://purl.org/dc/terms/"
 };
 
 const BASE = {
