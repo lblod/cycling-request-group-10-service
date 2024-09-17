@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+
+
 const prefixes = {
   adms: "http://www.w3.org/ns/adms#",
   adres: "https://data.vlaanderen.be/ns/adres#",
@@ -31,7 +34,7 @@ const prefixHeaderLines = Object.fromEntries(
 
 // Make more generic if needed
 function formatDate(date) {
-    return format(date, 'dd/MM/yyyy');
+    return dayjs(date).format('DD/MM/YYYY');
 }
 
 export { prefixHeaderLines, formatDate };

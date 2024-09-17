@@ -20,6 +20,11 @@ export const ORGANISATION_GRAPH_PREFIX = envvar
   .default('http://mu.semte.ch/graphs/organizations/')
   .asUrlString();
 
+  export const PUBLIC_GRAPH = envvar
+  .get('PUBLIC_GRAPH')
+  .default('http://mu.semte.ch/graphs/public')
+  .asUrlString();
+
 export const BATCH_SIZE = envvar.get('BATCH_SIZE').default('1000').asInt();
 
 export const LOGLEVEL = envvar
@@ -42,7 +47,7 @@ export const ERROR_BASE = envvar
   .default('http://data.lblod.info/errors/')
   .asUrlString();
 
-const PREFIXES = {
+export const PREFIXES = {
   besluit: 'http://data.vlaanderen.be/ns/besluit#',
   adms: 'http://www.w3.org/ns/adms#',
   skos: 'http://www.w3.org/2004/02/skos/core#',
@@ -77,10 +82,19 @@ const PREFIXES = {
   person: 'http://www.w3.org/ns/person#',
   xsd: 'http://www.w3.org/2001/XMLSchema#',
   cycling: 'http://mu.semte.ch/vocabularies/ext/cycling/',
+  ext: 'http://mu.semte.ch/vocabularies/ext/',
+  besluit: "http://data.vlaanderen.be/ns/besluit#",
+  mandaat: "http://data.vlaanderen.be/ns/mandaat#",
+  persoon: "http://data.vlaanderen.be/ns/persoon#",
+  eli: "http://data.europa.eu/eli/ontology#",
+  nao: "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#",
+  sign: "http://mu.semte.ch/vocabularies/ext/signing/",
+  dct: "http://purl.org/dc/terms/"
 };
 
 const BASE = {
   error: 'http://data.lblod.info/errors/',
+  ext: 'http://mu.semte.ch/vocabularies/ext/'
 };
 
 export const NAMESPACES = (() => {

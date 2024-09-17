@@ -12,9 +12,9 @@ import { Lock } from 'async-await-mutex-lock';
 import * as N3 from 'n3';
 const { namedNode, literal } = N3.DataFactory;
 import { waitForDatabase } from './lib/database';
-import { installAgendaItemRoutes } from './agendaItem/agendaItemRoute';
+import {installMockRoutes} from './mock/createResolutionRoute';
 
-// Body parser already in app
+// Body parser already in app.
 // app.use(
 //   bodyParser.json({
 //     type: function (req) {
@@ -29,7 +29,7 @@ app.get('/', function (req, res) {
   res.send('Hello from cycling-application-dispatch-service');
 });
 
-installAgendaItemRoutes(app);
+installMockRoutes(app);
 
 waitForDatabase(() => null);
 /**
@@ -59,7 +59,7 @@ export async function encapsulatedScanAndProcess(processDeletes) {
  * happens once on startup of the service. The reason for this being on a timer
  * is that it can be delayed if needed.
  */
-setTimeout(encapsulatedScanAndProcess, 500);
+// setTimeout(encapsulatedScanAndProcess, 500);
 
 /**
  * This is a lock to make sure requests are only processed one by one. This is
