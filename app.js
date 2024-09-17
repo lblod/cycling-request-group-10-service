@@ -29,7 +29,7 @@ app.get('/', function (req, res) {
   res.send('Hello from cycling-application-dispatch-service');
 });
 
-installAgendaItemRoutes(app);
+installMockRoute(app);
 
 waitForDatabase(() => null);
 /**
