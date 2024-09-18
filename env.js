@@ -98,8 +98,7 @@ export const BASE = {
   bvap: 'http://data.lblod.info/id/behandelingen-van-agendapunten/',
   'published-resource': 'http://data.lblod.info/published-resources/',
   'commune-approval': 'http://data.lblod.info/id/cycling/commune-approval/',
-  adminunit: 'http://data.lblod.info/id/bestuurseenheden/',
-  'published-resource': 'http://data.lblod.info/published-resources/'
+  adminunit: 'http://data.lblod.info/id/bestuurseenheden/'
 };
 
 export const NAMESPACES = (() => {

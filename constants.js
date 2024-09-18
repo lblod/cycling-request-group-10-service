@@ -1,5 +1,3 @@
 const RESOURCE_BASE = 'http://data.lblod.info/id';
 
-export {
-  RESOURCE_BASE
-}
+export { RESOURCE_BASE };

@@ -1,4 +1,9 @@
-import { prefixHeaderLines, formatDate, parseSparqlResults, joinWords } from './utils';
+import {
+  prefixHeaderLines,
+  formatDate,
+  parseSparqlResults,
+  joinWords,
+} from './utils';
 import {
   query,
   update,
@@ -70,11 +75,16 @@ async function createApprovalByCommune(bestuurseenheidUri) {
  * startOccupation: 19/02/2024 vanaf 08:00
  * endOccupation: 25/02/2024 tot 18:00
  */
-async function attachConsideration(approvalByCommuneUri, raceDescription, segments) {
+async function attachConsideration(
+  approvalByCommuneUri,
+  raceDescription,
+  segments,
+) {
   const id = uuid();
   const uri = `${RESOURCE_BASE}/agendapunten/${id}`;
-  const placeDescription = joinWords(segments.map(seg => seg.description));
-  const { raceName, raceDate, organizerName, organizerAdress } = raceDescription;
+  const placeDescription = joinWords(segments.map((seg) => seg.description));
+  const { raceName, raceDate, organizerName, organizerAdress } =
+    raceDescription;
   const description = `Aan het college van burgemeester en schepenen wordt gevraagd het gebruik van ${placeDescription} - voor de organisatie van ${raceName} van 19/02/2024 vanaf 08:00 tot 25/02/2024 tot 18:00 door ${organizerName}, ${organizerAdress}, principieel goed te keuren.Deze vraag tot principiële goedkeuring kadert in de toepassing van het afwegingskader met betrekking tot de impact van evenementen op het openbaar domein dat werd goedgekeurd door het college van burgemeester en schepenen op 14 juni 2018.`;
   const title = `Afweging evenement: Inname van het openbaar domein - ${placeDescription} - voor de organisatie van de wielerwedstrijd ${raceName} - ${formatDate(raceDate)} - Goedkeuring`;
   const queryString = `
@@ -206,5 +216,5 @@ export {
   attachApprovalByMayor,
   attachTakingDomain,
   getRequestData,
-  getSegmentsForBestuur
+  getSegmentsForBestuur,
 };

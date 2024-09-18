@@ -60,18 +60,18 @@ function parseSparqlResults(data) {
     });
     return obj;
   });
-};
+}
 
 function joinWords(words) {
-    if (words.length === 0) return ''; // Return empty string for no words
-    if (words.length === 1) return words[0]; // If there's only one word, return it
-    if (words.length === 2) return words.join(' en '); // For two words, join them with 'en'
-    
-    // For more than two words, join all except the last word with commas
-    const allExceptLast = words.slice(0, -1).join(', ');
-    const lastWord = words[words.length - 1];
-    
-    return `${allExceptLast} en ${lastWord}`;
+  if (words.length === 0) return ''; // Return empty string for no words
+  if (words.length === 1) return words[0]; // If there's only one word, return it
+  if (words.length === 2) return words.join(' en '); // For two words, join them with 'en'
+
+  // For more than two words, join all except the last word with commas
+  const allExceptLast = words.slice(0, -1).join(', ');
+  const lastWord = words[words.length - 1];
+
+  return `${allExceptLast} en ${lastWord}`;
 }
 
 export { prefixHeaderLines, formatDate, parseSparqlResults, joinWords };
