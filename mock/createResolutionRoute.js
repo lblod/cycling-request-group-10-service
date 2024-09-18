@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { dateToSparqlLiteral, toExtNode } from '../lib/util';
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import bodyParser from 'body-parser';
+import { bestuurseenhedenForRequest } from '../queries';
 
 /**
  * @typedef {Object} MockResolutionBody
@@ -64,9 +65,28 @@ const createMockResolution = async (req,res) => {
     return;
   }
   res.status(200).json({success:true});
+}
 
+export async function createAgendaItems(req, res) {
+  const requestId = req.params.cyclingRequestId;
+  const bestuurseenhedenResponse = await query(bestuurseenhedenForRequest(requestId));
+  // const bestuurseenheden = parseSparqlResults(bestuurseenhedenResponse);
+  // res.send(bestuurseenheden);
+  res.end();
+  
+  // await Promise.all(
+  //   bestuurseenheden.map(async (eenheid) => {
+  //     await update(createApprovalByCommune(eenheid.uri));
+  //     await Promise.all([
+  //       attachConsideration(approval),
+  //       attachTakingDomain(approval),
+  //       attachApprovalByMayor(approval),
+  //     ]);
+  //   })
+  // );
 }
 
 export function installMockRoutes(app) {
   app.post('/mock/resolution',  bodyParser.json({ limit: '50mb' }), createMockResolution);
+  app.post('/mock/create-agenda-items/:cyclingRequestId', createAgendaItems);
 }
