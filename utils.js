@@ -19,6 +19,7 @@ const prefixes = {
   lmb: 'http://lblod.data.gift/vocabularies/lmb/',
   locn: 'http://www.w3.org/ns/locn#',
   mandaat: 'http://data.vlaanderen.be/ns/mandaat#',
+  mobi: 'https://data.vlaanderen.be/ns/mobiliteit#',
   mu: 'http://mu.semte.ch/vocabularies/core/',
   nao: 'http://www.semanticdesktop.org/ontologies/2007/08/15/nao#',
   nfo: 'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#',
@@ -61,4 +62,16 @@ function parseSparqlResults(data) {
   });
 };
 
-export { prefixHeaderLines, formatDate, parseSparqlResults };
+function joinWords(words) {
+    if (words.length === 0) return ''; // Return empty string for no words
+    if (words.length === 1) return words[0]; // If there's only one word, return it
+    if (words.length === 2) return words.join(' en '); // For two words, join them with 'en'
+    
+    // For more than two words, join all except the last word with commas
+    const allExceptLast = words.slice(0, -1).join(', ');
+    const lastWord = words[words.length - 1];
+    
+    return `${allExceptLast} en ${lastWord}`;
+}
+
+export { prefixHeaderLines, formatDate, parseSparqlResults, joinWords };
