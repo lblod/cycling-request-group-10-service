@@ -1,5 +1,7 @@
-import { prefixHeaderLines, formatDate } from './utils';
+import { prefixHeaderLines, formatDate, parseSparqlResults } from './utils';
 import {
+  query,
+  update,
   sparqlEscapeString,
   uuid,
   sparqlEscapeUri,
@@ -7,8 +9,8 @@ import {
 } from 'mu';
 import { RESOURCE_BASE } from './constants';
 
-function bestuurseenhedenForRequest(requestId) {
-  return `
+async function bestuurseenhedenForRequest(requestId) {
+  const queryString = `
     ${prefixHeaderLines.adres}
     ${prefixHeaderLines.besluit}
     ${prefixHeaderLines.cycling}
@@ -29,9 +31,13 @@ function bestuurseenhedenForRequest(requestId) {
       ?werkingsgebied 
         rdfs:label ?gemeentenaam ;
         ^besluit:werkingsgebied ?bestuurseenheid .
-
     }
   `;
+
+  const result = await query(queryString);
+  const parsed = parseSparqlResults(result);
+
+  return parsed.map((entry) => entry.uri);
 }
 
 function createApprovalByCommune(bestuurseenheidUri) {
