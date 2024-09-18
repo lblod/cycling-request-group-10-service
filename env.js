@@ -88,7 +88,7 @@ export const PREFIXES = {
   dct: 'http://purl.org/dc/terms/',
 };
 
-const BASE = {
+export const BASE = {
   error: 'http://data.lblod.info/errors/',
   ext: 'http://mu.semte.ch/vocabularies/ext/',
   agendapunt: 'http://data.lblod.info/id/agendapunten/',
@@ -99,6 +99,7 @@ const BASE = {
   'published-resource': 'http://data.lblod.info/published-resources/',
   'commune-approval': 'http://data.lblod.info/id/cycling/commune-approval/',
   adminunit: 'http://data.lblod.info/id/bestuurseenheden/',
+  'published-resource': 'http://data.lblod.info/published-resources/'
 };
 
 export const NAMESPACES = (() => {

@@ -39,8 +39,8 @@ app.post(
       }
       if (!triggeringInsert) return; // We can ignore if nothing was received
       // Insert found. We can now update the associated event tate
-      const bvapUri = triggeringInsert.object.value;
-      const agendaitemUri = triggeringInsert.subject.value;
+      const bvapUri = triggeringInsert.subject.value;
+      const agendaitemUri = triggeringInsert.object.value;
       console.log('Recieved a changed AgendaItem delta');
       updateApplicatonState(agendaitemUri, bvapUri);
     } catch (err) {
