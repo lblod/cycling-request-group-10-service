@@ -81,7 +81,7 @@ export const PREFIXES = {
   code: 'http://data.vlaanderen.be/id/concept/',
   person: 'http://www.w3.org/ns/person#',
   xsd: 'http://www.w3.org/2001/XMLSchema#',
-  cycling: 'http://mu.semte.ch/vocabularies/ext/cycing/',
+  cycling: 'http://mu.semte.ch/vocabularies/ext/cycling/',
   ext: 'http://mu.semte.ch/vocabularies/ext/',
   besluit: "http://data.vlaanderen.be/ns/besluit#",
   mandaat: "http://data.vlaanderen.be/ns/mandaat#",
@@ -94,7 +94,16 @@ export const PREFIXES = {
 
 const BASE = {
   error: 'http://data.lblod.info/errors/',
-  ext: 'http://mu.semte.ch/vocabularies/ext/'
+  ext: 'http://mu.semte.ch/vocabularies/ext/',
+  agendapunt: 'http://data.lblod.info/id/agendapunten/',
+  besluit: 'http://data.lblod.info/id/besluiten/',
+  refusal: 'http://data.lblod.info/id/weigeringen/',
+  vergunning: 'http://data.lblod.info/id/vergunning/',
+  bvap: 'http://data.lblod.info/id/behandelingen-van-agendapunten/',
+  "published-resource": 'http://data.lblod.info/published-resources/',
+  "commune-approval":"http://data.lblod.info/id/cycling/commune-approval/",
+  adminunit: 'http://data.lblod.info/id/bestuurseenheden/',
+
 };
 
 export const NAMESPACES = (() => {

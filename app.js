@@ -1,18 +1,15 @@
-import bodyParser from 'body-parser';
 import { app } from 'mu';
 import { v4 as uuid } from 'uuid';
 import { BASES as b } from './env';
 import { NAMESPACES as ns } from './env';
 import * as env from './env';
 import * as mas from '@lblod/mu-auth-sudo';
-import * as rst from 'rdf-string-ttl';
-import * as del from './lib/deltaProcessing';
-import * as sts from './lib/storeToTriplestore';
-import { Lock } from 'async-await-mutex-lock';
 import * as N3 from 'n3';
 const { namedNode, literal } = N3.DataFactory;
-import { waitForDatabase } from './lib/database';
 import {installMockRoutes} from './mock/createResolutionRoute';
+import bodyParser from 'body-parser';
+import { updateApplicatonState} from './updateEventApplicationState';
+import { querySudo as query } from '@lblod/mu-auth-sudo';
 
 // Body parser already in app.
 // app.use(
@@ -25,35 +22,37 @@ import {installMockRoutes} from './mock/createResolutionRoute';
 //   }),
 // );
 
-app.get('/', function (req, res) {
+app.get('/', async function (req , res) {
   res.send('Hello from cycling-application-dispatch-service');
 });
 
 installMockRoutes(app);
 
-waitForDatabase(() => null);
-/**
- * When the service starts, make it do a scan of the inserts and deletes to
- * first clear out those graphs as much as possible.
- *
- * @public
- * @async
- * @function
- * @param {Boolean} processDeletes - Whether to also look for deletes or not.
- * @returns {undefined} Nothing
- */
-export async function encapsulatedScanAndProcess(processDeletes) {
+app.post('/delta',bodyParser.json({ limit: '50mb' }), function(req,res) {
+  res.status(200).end();
   try {
-    await lock.acquire();
-    const results = await del.scanAndProcess(processDeletes);
-    handleProcessingResult(results);
-  } catch (err) {
-    await logError(err);
-  } finally {
-    lock.release();
-  }
-}
+    const changesets = req.body;
+    // Check if agendeitem is linked to besluit
+    let triggeringInsert = null;
+    outside: for (const changeset of changesets) {
+      for (const insert of changeset.inserts) {
+        if (insert.predicate.value === 'http://purl.org/dc/terms/subject') {
+          triggeringInsert = insert;
+          break outside;
+        }
+      }
+    }
+    if (!triggeringInsert) return; // We can ignore if nothing was received
+    // Insert found. We can now update the associated event tate
+    const bvapUri = triggeringInsert.object.value;
+    const agendaitemUri = triggeringInsert.subject.value;
+    console.log('Recieved a changed AgendaItem delta')
+    updateApplicatonState(agendaitemUri, bvapUri);
 
+  } catch (err) {
+    next(err);
+  }
+})
 /**
  * Use a `setTimeout` to schedule the scanning of the temporary graphs. This
  * happens once on startup of the service. The reason for this being on a timer
@@ -69,21 +68,17 @@ export async function encapsulatedScanAndProcess(processDeletes) {
  *
  * @global
  */
-const lock = new Lock();
-
 app.post('/delta-inserts', async function (req, res, next) {
   // We can already send a 200 back. The delta-notifier does not care about the
   // result, as long as the request is closed.
   res.status(200).end();
   try {
-    await lock.acquire();
     const changesets = req.body;
-    const result = await del.processDeltaChangesets(changesets);
-    handleProcessingResult(result);
+    console.log(changesets);
   } catch (err) {
     next(err);
   } finally {
-    lock.release();
+    // lock.release();
   }
 });
 
@@ -92,37 +87,36 @@ app.post('/delta-deletes', async function (req, res, next) {
   // result, as long as the request is closed.
   res.status(200).end();
   try {
-    await lock.acquire();
     const changesets = req.body;
     //Deletes are actually inserts in the temporary deletes graph. Move them
     //over to deletes and remove the inserts to trick the delta processor.
-    for (const changeset of changesets) {
-      changeset.deletes = changeset.deletes.concat(changeset.inserts);
-      changeset.inserts = [];
-    }
-    const result = await del.processDeltaChangesets(changesets);
-    handleProcessingResult(result);
+    // for (const changeset of changesets) {
+    //   changeset.deletes = changeset.deletes.concat(changeset.inserts);
+    //   changeset.inserts = [];
+    // }
+    // const result = await del.processDeltaChangesets(changesets);
+    // handleProcessingResult(result);
   } catch (err) {
     next(err);
   } finally {
-    lock.release();
+    // lock.release();
   }
 });
 
-app.post('/manual-dispatch', async function (req, res, next) {
-  // We can already send a 200 back. The delta-notifier does not care about the
-  // result, as long as the request is closed.
-  res.status(200).end();
-  try {
-    await lock.acquire();
-    const results = await del.scanAndProcess();
-    handleProcessingResult(results);
-  } catch (err) {
-    next(err);
-  } finally {
-    lock.release();
-  }
-});
+// app.post('/manual-dispatch', async function (req, res, next) {
+//   // We can already send a 200 back. The delta-notifier does not care about the
+//   // result, as long as the request is closed.
+//   res.status(200).end();
+//   try {
+//     await lock.acquire();
+//     const results = await del.scanAndProcess();
+//     handleProcessingResult(results);
+//   } catch (err) {
+//     next(err);
+//   } finally {
+//     lock.release();
+//   }
+// });
 
 ///////////////////////////////////////////////////////////////////////////////
 // Error handler
@@ -198,39 +192,4 @@ async function writeError(errorStore) {
       }
     }
   `);
-}
-
-/*
- * The pocessing of delta messages should return an object with a potential
- * information message. This function prints the message when the loglevel
- * requests for that.
- *
- * @function
- * @param {Object} results - A JavaScript object with properties described in
- * `del.processDeltaMessages`. Logs are printed according to the loglevel.
- * @returns {undefined} Nothing
- */
-function handleProcessingResult(results) {
-  if (env.LOGLEVEL === 'info') {
-    const allResults = [...results.deletes, ...results.inserts];
-    if (allResults.length > 0) {
-      console.log('Printing the results of the last dispatching:');
-      for (const res of allResults) {
-        res.subject = res.subject?.value;
-        res.type = res.type?.value;
-        res.organisationGraph = res.organisationGraph?.value;
-        res.organisationGraphs = (res.organisationGraphs || []).map(
-          (g) => g.value,
-        );
-        res.organisationUUIDs = (res.organisationUUIDs || []).join(',');
-        res.vendor = res.vendor?.value;
-        if (res.triple) res.triple = sts.formatTriple(res.triple);
-        res.graphs = (res.graphs || []).join(',');
-        console.log(res);
-      }
-      console.log('End of results');
-    } else {
-      console.log('No data had to be processed');
-    }
-  }
 }
