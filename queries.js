@@ -47,18 +47,21 @@ async function bestuurseenhedenForRequest(requestId) {
   return parsed.map((entry) => entry.bestuurseenheid);
 }
 
-async function createApprovalByCommune(bestuurseenheidUri) {
+async function createApprovalByCommune(bestuurseenheidUri, requestUri) {
   const approvalId = uuid();
   const approvalUri = `${RESOURCE_BASE}/cycling/commune-approval/${approvalId}`;
   const now = new Date();
   await update(`
     ${prefixHeaderLines.cycling}
+    ${prefixHeaderLines.mu}
     ${prefixHeaderLines.dct}
 
     INSERT DATA {
       ${sparqlEscapeUri(approvalUri)} 
         a cycling:GoedkeuringDoorGemeente ;
+        mu:uuid ${sparqlEscapeString(approvalId)} ;
         dct:createdAt ${sparqlEscapeDateTime(now)} ;
+        cycling:goedkeuringVoor ${sparqlEscapeUri(requestUri)} ;
         cycling:bevoegdeBestuurseenheid ${sparqlEscapeUri(bestuurseenheidUri)} .
     }
   `);
@@ -91,12 +94,14 @@ async function attachConsideration(
     ${prefixHeaderLines.besluit}
     ${prefixHeaderLines.cycling}
     ${prefixHeaderLines.dct}
+    ${prefixHeaderLines.mu}
 
     INSERT DATA {
       GRAPH ${sparqlEscapeUri(PUBLIC_GRAPH)} {
         ${sparqlEscapeUri(approvalByCommuneUri)} cycling:afweging ${sparqlEscapeUri(uri)} .
         ${sparqlEscapeUri(uri)} 
           a besluit:Agendapunt ;
+          mu:uuid ${sparqlEscapeString(id)} ;
           dct:description ${sparqlEscapeString(description)} ;
           dct:title ${sparqlEscapeString(title)} .
       }
@@ -114,20 +119,19 @@ function attachTakingDomain(approvalByCommuneUri, raceDescription) {
   const { name: raceName, placeDescription, date: raceDate } = raceDescription;
   const description = `Aan het college van burgemeester en schepenen wordt gevraagd aan ${raceOrganizerName}, Harensesteenweg 28, 1800 Vilvoorde, het gebruik van het Citadelpark en omgeving in Gent voor de organisatie van de wielerwedstrijd Omloop Het Nieuwsblad elite mannen en elite vrouwen toe te staan op 24/02/2024 - met start opbouw op 19/02/2024 en einde afbouw op 26/02/2024.`;
   const title = `Afweging evenement: Inname van het openbaar domein - ${placeDescription} - voor de organisatie van de wielerwedstrijd ${raceName} - ${formatDate(raceDate)} - Goedkeuring`;
-  const type = ''; // TODO: should be URI
-  const now = new Date();
   return `
     ${prefixHeaderLines.besluit}
     ${prefixHeaderLines.cycling}
     ${prefixHeaderLines.dct}
+    ${prefixHeaderLines.mu}
 
     INSERT DATA {
       ${approvalByCommuneUri} cycling:innameOpenbaarDomein ${sparqlEscapeUri(uri)} .
       ${sparqlEscapeUri(uri)} 
         a besluit:Agendapunt ;
+        mu:uuid ${sparqlEscapeString(id)} ;
         dct:description ${sparqlEscapeString(description)} ;
-        dct:title ${sparqlEscapeString(title)} ;
-        besluit:Agendapunt.type ${sparqlEscapeUri(type)} .
+        dct:title ${sparqlEscapeString(title)} .
     }
   `;
 }
@@ -138,19 +142,20 @@ function attachApprovalByMayor(approvalByCommuneUri, raceDescription) {
   const { name: raceName, placeDescription, date: raceDate } = raceDescription;
   const title = `${raceName} - goedkeuring`;
   const description = `Aan het college van burgemeester en schepenen wordt gevraagd het gebruik van ${placeDescription} - voor de organisatie van ${raceName} van 19/02/2024 vanaf 08:00 tot 25/02/2024 tot 18:00 door ${raceOrganizerName}, ${raceOrganizerAdress}, principieel goed te keuren.Deze vraag tot principiële goedkeuring kadert in de toepassing van het afwegingskader met betrekking tot de impact van evenementen op het openbaar domein dat werd goedgekeurd door het college van burgemeester en schepenen op 14 juni 2018.`;
-  const type = ''; // TODO: should be URI
   return `
     ${prefixHeaderLines.besluit}
     ${prefixHeaderLines.cycling}
     ${prefixHeaderLines.dct}
+    ${prefixHeaderLines.mu}
+
 
     INSERT DATA {
       ${approvalByCommuneUri} cycling:approvalByMayor ${sparqlEscapeUri(uri)} .
       ${sparqlEscapeUri(uri)} 
         a besluit:Agendapunt ;
+        mu:uuid ${sparqlEscapeString(id)} ;
         dct:description ${sparqlEscapeString(description)} ;
-        dct:title ${sparqlEscapeString(title)} ;
-        besluit:Agendapunt.type ${sparqlEscapeUri(type)} .
+        dct:title ${sparqlEscapeString(title)} .
     }
   `;
 }
@@ -161,7 +166,7 @@ async function getRequestData(requestId) {
     ${prefixHeaderLines.dct}
     ${prefixHeaderLines.mu}
 
-    SELECT ?raceName ?raceDate ?organizerName ?organizerAdress ?description
+    SELECT ?raceName ?raceDate ?organizerName ?organizerAdress ?description ?request
     WHERE {
       ?request 
         mu:uuid ${sparqlEscapeString(requestId)} ;
