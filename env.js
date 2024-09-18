@@ -20,7 +20,7 @@ export const ORGANISATION_GRAPH_PREFIX = envvar
   .default('http://mu.semte.ch/graphs/organizations/')
   .asUrlString();
 
-  export const PUBLIC_GRAPH = envvar
+export const PUBLIC_GRAPH = envvar
   .get('PUBLIC_GRAPH')
   .default('http://mu.semte.ch/graphs/public')
   .asUrlString();
@@ -48,14 +48,11 @@ export const ERROR_BASE = envvar
   .asUrlString();
 
 export const PREFIXES = {
-  besluit: 'http://data.vlaanderen.be/ns/besluit#',
   adms: 'http://www.w3.org/ns/adms#',
   skos: 'http://www.w3.org/2004/02/skos/core#',
   reorg: 'http://www.w3.org/ns/regorg#',
   lblodgeneriek: 'https://data.lblod.info/vocabularies/generiek/',
   org: 'http://www.w3.org/ns/org#',
-  code: 'http://lblod.data.gift/vocabularies/organisatie/',
-  adms: 'http://www.w3.org/ns/adms#',
   generiek: 'https://data.vlaanderen.be/ns/generiek#',
   ere: 'http://data.lblod.info/vocabularies/erediensten/',
   organisatie: 'https://data.vlaanderen.be/ns/organisatie#',
@@ -65,7 +62,6 @@ export const PREFIXES = {
   schema: 'http://schema.org/',
   locn: 'http://www.w3.org/ns/locn#',
   foaf: 'http://xmlns.com/foaf/0.1/',
-  ext: 'http://mu.semte.ch/vocabularies/ext/',
   dcterms: 'http://purl.org/dc/terms/',
   geo: 'http://www.opengis.net/ont/geosparql#',
   adres: 'https://data.vlaanderen.be/ns/adres#',
@@ -83,13 +79,13 @@ export const PREFIXES = {
   xsd: 'http://www.w3.org/2001/XMLSchema#',
   cycling: 'http://mu.semte.ch/vocabularies/ext/cycling/',
   ext: 'http://mu.semte.ch/vocabularies/ext/',
-  besluit: "http://data.vlaanderen.be/ns/besluit#",
-  mandaat: "http://data.vlaanderen.be/ns/mandaat#",
-  persoon: "http://data.vlaanderen.be/ns/persoon#",
-  eli: "http://data.europa.eu/eli/ontology#",
-  nao: "http://www.semanticdesktop.org/ontologies/2007/08/15/nao#",
-  sign: "http://mu.semte.ch/vocabularies/ext/signing/",
-  dct: "http://purl.org/dc/terms/"
+  besluit: 'http://data.vlaanderen.be/ns/besluit#',
+  mandaat: 'http://data.vlaanderen.be/ns/mandaat#',
+  persoon: 'http://data.vlaanderen.be/ns/persoon#',
+  eli: 'http://data.europa.eu/eli/ontology#',
+  nao: 'http://www.semanticdesktop.org/ontologies/2007/08/15/nao#',
+  sign: 'http://mu.semte.ch/vocabularies/ext/signing/',
+  dct: 'http://purl.org/dc/terms/',
 };
 
 const BASE = {
@@ -100,10 +96,9 @@ const BASE = {
   refusal: 'http://data.lblod.info/id/weigeringen/',
   vergunning: 'http://data.lblod.info/id/vergunning/',
   bvap: 'http://data.lblod.info/id/behandelingen-van-agendapunten/',
-  "published-resource": 'http://data.lblod.info/published-resources/',
-  "commune-approval":"http://data.lblod.info/id/cycling/commune-approval/",
+  'published-resource': 'http://data.lblod.info/published-resources/',
+  'commune-approval': 'http://data.lblod.info/id/cycling/commune-approval/',
   adminunit: 'http://data.lblod.info/id/bestuurseenheden/',
-
 };
 
 export const NAMESPACES = (() => {
